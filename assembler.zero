@@ -1,0 +1,423 @@
+###############################
+# Language Zero
+# Written in Language Zero
+# (slots are 8 bytes large)
+
+# stack starts out empty
+# heap is seperate
+
+# heap starts out with source 
+# as bytes loaded into slots 
+# sequentially starting at 
+# index 0
+
+# all other heap slots are 0
+
+@main 2:2 {
+  # r0 is ptr to source
+  # r1 is len of source
+  # o0 is ptr of asm
+  # o1 is len of asm
+
+  r0 r1 = @lex r0 r1
+  DIE
+
+  # TODO
+
+  r0 r1 = @parse r0 r1
+  r0 r1 = @walk r0 r1
+  RET r0 r1
+}
+
+# token is (variant, payload)
+
+@lex 2:2 {
+  # r0 is ptr to source slot
+  # r1 is len of source bytes
+  # o0 is ptr to tokens
+  # o1 is len tokens
+
+  # r2 is len source in slots
+  # r3 is bytes in last slot
+  r2 = DIV r1 8
+  r3 = MOD r1 8
+
+  # r4 is ptr to tokens start
+  # r5 is ptr to token slot
+  # r6 is len of tokens
+  r4 = ADD r0 r2
+  r4 = ADD r3 1
+  r5 = LIT r4
+  r6 = LIT 0
+ 
+  # r7 is index of byte in slot
+  # r8 is current slot contents
+  # r9 is current byte contents
+  r7 = LIT 0
+  r8 = GET r0
+  r9 = @lex_get_byte r8 r7
+
+  # skip the first advancement
+  JMP .start
+
+  # main lexing loop
+.loop 
+  # r12 is on last slot
+  # r13 is on last byte
+  # r14 is at the end 
+  r12 = EQL r0 r2
+  r13 = EQL r3 r7
+  r14 = AND r12 r13
+  JNZ r14 .done
+
+  # advance the lexer
+  r0 r7 r8 r9 = @lex_a r0 r7 r8
+
+.start  
+  # dispatch on current byte
+  # r10 is full Token
+  # r11 is classification
+  r10 r11 = @lex_dispatch r9
+
+  # it was whitespace try again
+  JEQ .loop r11 4
+
+  # handle single byte tokens
+  # r15 is payload
+  r15 = 0
+  JNZ .full r10
+ 
+  # handle multibyte tokens
+  r15 r0 r9 = @lex_mb r11 r0 
+
+  # a one character token
+.full
+  # write variant to memory
+  # advance slot
+  # write payload to Memory
+  # advance slot
+  # grow token list size
+  # loop to lex next token
+  SET r5 r11
+  r5 = ADD r5 1
+  SET r5 r15
+  r5 = ADD r5 1
+  r6 = ADD r6 1
+  JMP .loop
+
+  # return tokens = (ptr, len)
+.done
+  RET r4 r6
+}
+
+# lex a multibyte token
+@lex_mb 5:5 {
+  # r0 is classification
+  # r1 is ptr to source slot 
+  # r2 is index of byte in slot
+  # r3 is current slot contents
+  # r4 is current byte contents
+  # o0 is payload
+  # o1 is ptr to new slot 
+  # o2 is index of new byte
+  # o3 is new slot contents
+  # o4 is new byte contents
+
+  # dispatch on classification
+  JEQ .reg     r0 5
+  JEQ .ascii   r0 6
+  JEQ .label   r0 7
+  JEQ .fun     r0 8
+  JEQ .comment r0 9
+  JEQ .line    r0 10
+  JEQ .number  r0 11 
+  JEQ .op      r0 12
+ 
+  # panic on unreachable
+  DIE
+
+  # r0 is payload
+  r0 = 0
+
+.reg
+  # number prefixed by r
+  r1 r2 r3 r4 = @lex_a r1 r2 r3
+  JMP .number
+
+.ascii
+  # advance past quote
+  # take next byte literally
+  # check for end quote
+  r1 r2 r3 r4 = @lex_a r1 r2 r3
+  r0 = LIT r4
+  r1 r2 r3 r4 = @lex_a r1 r2 r3
+  JEQ .done r4 '''
+
+  # panic on no closing '
+  DIE
+
+.label
+  # identifier prefixed by .
+  JMP .fun
+
+.fun
+  r0 = @lex_iden r1 r2 r3
+  # TODO
+  DIE
+
+.comment
+  # grab next byte
+  # check if newline
+  # repeat until it is
+  r1 r2 r3 r4 = @lex_a r1 r2 r3
+  r4 = @lex_is_newline r4 
+  JNZ .done
+  JMP .comment
+
+.line
+  JMP .done
+
+.number
+  r0 = LIT 0
+.number_loop
+  r0 = MUL r0 10
+  r5 = SUB r4 '0'
+  r0 = ADD r0 r5
+  r5 r6 r7 r4 = @lex_a r1 r2 r3
+  r8 = @lex_is_digit r4
+  JEQ .done r8 0
+  r1 = LIT r5
+  r2 = LIT r6
+  r3 = LIT r7
+  JMP .number_loop  
+
+.op
+  r1 r2 r3 r5 = @lex_a r1 r2 r3
+  r1 r2 r3 r6 = @lex_a r1 r2 r3
+  r0 = @lex_op r4 r5 r6
+  JMP .done
+
+  # return
+.done
+  RET r0 r1 r2 r3 r4
+}
+
+# TODO: finish hashing identifiers
+
+@lex_iden 3:1 {
+  # r0 is ptr to source slot 
+  # r1 is index of byte in slot
+  # r2 is current slot contents
+  # o0 is hash
+
+  # r3 is current byte contents
+  r0 r1 r2 r3 = @lex_a r0 r1 r2
+
+  # r4 is cumulative hash
+  r4 = 0
+.outer
+  # r5 is accumulation register
+  r5 = 0
+.inner
+  # validate the current byte
+  # r6 is is byte valid
+  r6 = @lex_iden r4
+  JEQ .hash r6 0
+  
+  r5 = SHL 
+
+.hash
+  r5 = @lex_hash r5
+  r4 = XOR r4 r5
+  JMP .inner
+
+  RET r4
+}
+
+@lex_op 3:1 {
+  # r0 is first byte
+  # r1 is second byte
+  # r2 is third byte
+  
+  # first byte already valid
+  # check other bytes
+  r3 = @lex_is_op r1
+  r4 = @lex_is_op r2
+  r3 = AND r3 r4
+  JEQ .invalid r3 0
+
+  # squash letters into 5 bits
+  # ceil(log2(26)) = 5
+  r0 = SUB r0 'A'
+  r1 = SUB r1 'A'
+  r2 = SUB r2 'A'
+
+  # merge together
+  r0 = SHL r0 10
+  r0 = SHL r1 5
+  r0 = IOR r0 r1
+  r0 = IOR r0 r2
+
+  # return squashed repr
+  RET r0
+
+  # opcode is invalid
+.invalid
+  DIE
+}
+
+@lex_is_line 1:1 {
+  # r0 is byte
+  # o0 is true if byte is line
+
+  # check newline (line feed)
+  # check carriage return
+  # return if not either
+  JEQ .true r0 10
+  JEQ .true r0 13
+  RET 0
+
+.true
+  RET 1 
+}
+
+@lex_is_digit 1:1 {
+  # r0 is byte
+  # o0 is true if byte is digit  
+  r1 = GTE r0 '0'
+  r2 = LTE r0 '9'
+  r1 = AND r1 r2
+  RET r1 
+}
+
+@lex_is_op 1:1 {
+  # r0 is byte
+  # o0 is true if byte is upper
+  r1 = GTE r0 'A'
+  r2 = LTE r0 'Z'
+  r1 = AND r1 r2
+  RET r1
+}
+
+@lex_is_iden 1:1 {
+  # r0 is byte
+  # o0 is true if byte is lower
+  r1 = GTE r0 'a'
+  r2 = LTE r0 'z'
+  r1 = AND r1 r2
+  RET r1
+}
+
+# advance to the next byte
+@lex_a 3:4 {
+  # r0 is ptr to slot
+  # r1 is byte in slot
+  # r2 is current slot contents
+  # o0 is next ptr to slot
+  # o1 is next byte in slot
+  # o2 is next slot contents
+  # o3 is next byte
+  
+  # move to the next slot/byte
+  # load slot
+  # r3 is next byte
+  r0 r1 = @lex_next_byte r1 r0
+  r2 = GET r0
+  r3 = @lex_get_byte r2 r1
+
+  RET r0 r1 r2 r3
+}
+
+# classify token starting byte
+@lex_dispatch 1:1 {
+  # r0 is byte to classify
+  # o0 is full token
+  # o1 is classification
+
+  JEQ .open    r0 '{'  # 0
+  JEQ .close   r0 '}'  # 1
+  JEQ .assign  r0 '='  # 2
+  JEQ .sig     r0 ':'  # 3
+  JEQ .space   r0 ' '  # 4
+  JEQ .reg     r0 'r'  # 5
+  JEQ .ascii   r0 '''  # 6
+  JEQ .label   r0 '.'  # 7
+  JEQ .fun     r0 '@'  # 8
+  JEQ .comment r0 '#'  # 9
+  
+  # r1 is scratch comparison
+
+  r1 = @lex_is_line r0   #
+  JNZ .line r1           # 10
+ 
+  r1 = @lex_is_digit r0  #
+  JNZ .number r1         # 11
+
+  r1 = @lex_is_op r0     #
+  JNZ .op r1             # 12
+
+  # panic on unknown byte
+  DIE
+
+  # jump targets
+.open
+  RET 1 0
+.close
+  RET 1 1
+.assign
+  RET 1 2
+.sig
+  RET 1 3
+.space
+  RET 1 4
+.reg
+  RET 0 5
+.ascii 
+  RET 0 6
+.label
+  RET 0 7
+.fun
+  RET 0 8
+.comment
+  RET 0 9
+.line
+  RET 0 10
+.number
+  RET 0 11
+.op
+  RET 0 12
+}
+
+@lex_get_byte 2:1 {
+  # r0 is current slot contents
+  # r1 is byte in slot
+  # o0 is the current byte
+ 
+  # shift over r1 bytes
+  r2 = MUL r1 8
+  r3 = SHR r1 r2
+  
+  # mask high bits and return
+  r4 = AND r3 255
+  RET o0 
+}
+
+@lex_next_byte 2:2 {
+  # r0 is ptr to source slot
+  # r1 is byte in slot
+  # o0 is next slot
+  # o1 is byte in slot
+  
+  # check if last byte
+  r2 = EQL r1 7
+  JNZ .slot r2
+
+  # move to next byte
+  r1 = ADD r1 1
+  RET r0 r1
+
+  # roll over if last byte
+.slot
+  r0 = ADD r0 1
+  RET r0 0
+}
