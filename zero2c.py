@@ -192,7 +192,7 @@ def emit_line(i, line, fun, regs, out):
 for name, (inr, out, block) in items(funs):
   regs = set()
   print(f"param{out}_t", end=" ")
-  print(f"{name}(param{inr}_t a) {")
+  print(f"{name}(param{inr}_t a) {{")
   declare_input_registers(inr, regs)
   
   for i, line in block:
