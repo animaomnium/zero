@@ -6,18 +6,18 @@
 # stack starts out empty
 # heap is seperate
 
-# heap starts out with source 
+# heap starts out with source
 # as bytes loaded into slots 
-# sequentially starting at 
+# sequentially starting at
 # index 0
 
 # all other heap slots are 0
 
 @main 2:2 {
   # r0 is ptr to source
-  # r1 is len of source
+  # r1 is len of source bytes
   # o0 is ptr of asm
-  # o1 is len of asm
+  # o1 is len of asm bytes
 
   r0 r1 = @lex r0 r1
   DIE
@@ -162,8 +162,7 @@
 
 .fun
   r0 = @lex_iden r1 r2 r3
-  # TODO
-  DIE
+  JMP .done
 
 .comment
   # grab next byte
@@ -202,8 +201,7 @@
   RET r0 r1 r2 r3 r4
 }
 
-# TODO: finish hashing identifiers
-
+# uses djb2 hashing algo
 @lex_iden 3:1 {
   # r0 is ptr to source slot 
   # r1 is index of byte in slot
@@ -211,27 +209,32 @@
   # o0 is hash
 
   # r3 is current byte contents
-  r0 r1 r2 r3 = @lex_a r0 r1 r2
+  # skip over first byte (.@)
 
-  # r4 is cumulative hash
-  r4 = 0
-.outer
-  # r5 is accumulation register
-  r5 = 0
-.inner
-  # validate the current byte
-  # r6 is is byte valid
-  r6 = @lex_iden r4
-  JEQ .hash r6 0
-  
-  r5 = SHL 
+  # r7 is hash
+  r7 = 5381
 
-.hash
-  r5 = @lex_hash r5
-  r4 = XOR r4 r5
-  JMP .inner
+.loop
+  # grab next byte
+  r4 r5 r6 r3 = @lex_a r0 r1 r2
 
-  RET r4
+  # r8 is byte valid
+  r8 = @lex_iden r3
+  JEQ .done r6 0
+
+  # advance the lexer
+  r0 = LIT r4
+  r1 = LIT r5
+  r2 = LIT r6
+
+  # do the hashing and loop
+  r7 = MUL r7 33
+  r7 = ADD r7 r3
+  JMP .loop
+
+  # return hashed identifier
+.done
+  RET r7
 }
 
 @lex_op 3:1 {
