@@ -1,5 +1,3 @@
-# zerotoc.py
-
 from pprint import pprint
 
 def error(i, line):
@@ -118,7 +116,7 @@ def emit_label(i, iden, fun):
     assert char in IDEN
   print(f"{fun}__{iden}:  // {i}")
 
-define op2(op):
+def op2(op):
   def f(a, b):
     return f"{a} {op} {b}"
   return f
@@ -188,7 +186,8 @@ def emit_line(i, line, fun, regs, out):
   if op in OP_simple_case:
     expr = OP_simple_CASE[op](*args)
   else:
-    
+    # TODO
+    error(i, line)
 
 for name, (inr, out, block) in items(funs):
   regs = set()
@@ -199,4 +198,4 @@ for name, (inr, out, block) in items(funs):
   for i, line in block:
     emit_line(i, fun, line, regs, out)
 
-# TODO
+  print("}")
