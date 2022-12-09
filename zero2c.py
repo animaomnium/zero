@@ -190,6 +190,8 @@ def emit_line(i, line, fun, regs, out):
     elif arg[0] in "0123456789":
       n = int(arg)
       nargs.append(f"{n}LL")
+    elif arg[0] == ".":
+      nargs.append(arg)
     else:
       error(i, line)
   args = nargs    
@@ -217,8 +219,8 @@ def emit_line(i, line, fun, regs, out):
     # error(i, line)
     print("// TODO:", line)  
 
-  for result in results:
-    print(f"  r{result} = o{i}.v{result};")
+  for n, result in enumerate(results):
+    print(f"  r{result} = o{i}.v{n};")
 
 for fun, (inr, out, block) in funs.items():
   regs = set()
