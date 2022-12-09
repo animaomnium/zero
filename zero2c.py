@@ -173,7 +173,7 @@ def emit_line(i, line, fun, regs, out):
   function = False
   if op[0] == "@":
     function = True
-    for char in op[1:]
+    for char in op[1:]:
       assert char in IDEN
   else:
     assert len(op) == 3
@@ -218,6 +218,7 @@ def emit_line(i, line, fun, regs, out):
     print(f"param{n}_t o{i} = ", end="")
   
   if function:
+    # TODO: assert call is valid
     print(f"{fun}({ wrap(args) });")
   elif op in OP_simple_case:
     expr = OP_simple_case[op](*args)
