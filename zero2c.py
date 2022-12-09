@@ -189,7 +189,7 @@ def emit_line(i, line, fun, regs, out):
     # TODO
     error(i, line)
 
-for name, (inr, out, block) in items(funs):
+for name, (inr, out, block) in iter(funs):
   regs = set()
   print(f"param{out}_t", end=" ")
   print(f"{name}(param{inr}_t a) {{")
