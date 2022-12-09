@@ -184,7 +184,7 @@ def emit_line(i, line, fun, regs, out):
   args = nargs    
 
   nresults = []
-  for result in result:
+  for result in results:
     assert result[0] == "r"
     n = int(result[1:])
     if n not in args:
