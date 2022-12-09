@@ -161,6 +161,7 @@ def emit_line(i, line, fun, regs, out):
     instr = line  
 
   op, *args = instr.strip().split(" ")
+  print(op)
   assert len(op) == 3
   for char in op:
     assert char in OP
