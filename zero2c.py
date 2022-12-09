@@ -181,6 +181,8 @@ def emit_line(i, line, fun, regs, out):
     elif arg[0] in "0123456789":
       n = int(arg)
       nargs.append(f"{n}LL")
+  print(args)
+  print(nargs)
   args = nargs    
 
   nresults = []
