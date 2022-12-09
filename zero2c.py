@@ -21,7 +21,7 @@ with open("assembler.zero") as file:
 TEST = """
 # Fibonacci
 @fib_rec 1:1 {
-  r1 = SLT n 2
+  r1 = SLT r0 2
   JEQ .else r1 0
   RET r0
 .else
@@ -181,8 +181,8 @@ def emit_line(i, line, fun, regs, out):
     elif arg[0] in "0123456789":
       n = int(arg)
       nargs.append(f"{n}LL")
-  print(args)
-  print(nargs)
+    else:
+      error(i, line)
   args = nargs    
 
   nresults = []
@@ -201,8 +201,6 @@ def emit_line(i, line, fun, regs, out):
     print(f"param{n}_t o{i} = ", end="")
 
   if op in OP_simple_case:
-    print("  //", op)
-    print("  //", args)
     expr = OP_simple_case[op](*args)
     print(f"{expr};")
   else:
