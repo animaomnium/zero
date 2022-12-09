@@ -161,7 +161,6 @@ def emit_line(i, line, fun, regs, out):
     instr = line  
 
   op, *args = instr.strip().split(" ")
-  print(op)
   assert len(op) == 3
   for char in op:
     assert char in OP
@@ -217,6 +216,6 @@ for fun, (inr, out, block) in funs.items():
   declare_input_registers(inr, regs)
   
   for i, line in block:
-    emit_line(i, fun, line, regs, out)
+    emit_line(i, line, fun, regs, out)
 
   print("}")
