@@ -101,7 +101,7 @@ def generate_param(n):
   print("typedef struct {")
   for i in range(n):
     print(f"  v{i}: uint64_t,")
-  print(f"} param{n}_t;")
+  print(f"}} param{n}_t;")
 
 for i in range(1, 5):
   generate_param(i)
@@ -183,11 +183,31 @@ def emit_line(i, line, fun, regs, out):
       nargs.append(f"{n}LL")
   args = nargs    
 
+  nresults = []
+  for result in result:
+    assert result[0] = r
+    n = int(result[1:])
+    if n not in args:
+      print(f"  uint64_t r{n};")
+    args.add(n)
+    nresults.append(n)
+  results = nresults
+
+  print("  ", end="")
+  if len(results) > 0:
+    n = len(results)
+    print(f"param{n}_t o{i} = ", end="")
+
   if op in OP_simple_case:
     expr = OP_simple_CASE[op](*args)
+    print(f"{expr};")
   else:
     # TODO
-    error(i, line)
+    # error(i, line)
+    print("// TODO:", line)  
+
+  for result in results:
+    print(f"  r{result} = o{i}.v{result};")
 
 for name, (inr, out, block) in funs.items():
   regs = set()
