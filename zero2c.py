@@ -149,6 +149,7 @@ OP_simple_case = {
 }
 
 def emit_line(i, line, fun, regs, out):
+  print("  //", line)
   if line[0] == ".":
     emit_label(i, line[1:], fun)
     return
