@@ -76,9 +76,8 @@ while True:
       if line == "}": break
       block.append((i, line))
 
-    funs.insert(iden, (inr, out, block))
-  except e:
-    print(e)
+    funs[iden] = (inr, out, block)
+  except:
     error(i, line)
   n += 1
 
