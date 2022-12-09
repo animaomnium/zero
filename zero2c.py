@@ -119,7 +119,7 @@ def emit_label(i, iden, fun):
 def wrap_t(vals):
   n = len(vals)
   nvals = []
-  for i, val in vals:
+  for i, val in enumerate(vals):
     nvals.append(f"v{i}: {val}")
   inner = ", ".join(nvals)
   return f"param{n}_t {{ {inner} }}"
