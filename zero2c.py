@@ -199,7 +199,7 @@ def emit_line(i, line, fun, regs, out):
     print(f"param{n}_t o{i} = ", end="")
 
   if op in OP_simple_case:
-    expr = OP_simple_CASE[op](*args)
+    expr = OP_simple_case[op](*args)
     print(f"{expr};")
   else:
     # TODO
