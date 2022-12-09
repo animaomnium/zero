@@ -170,9 +170,15 @@ def emit_line(i, line, fun, regs, out):
     instr = line  
 
   op, *args = instr.strip().split(" ")
-  assert len(op) == 3
-  for char in op:
-    assert char in OP
+  function = False
+  if op[0] == "@":
+    function = True
+    for char in op[1:]
+      assert char in IDEN
+  else:
+    assert len(op) == 3
+    for char in op:
+      assert char in OP
 
   nargs = []
   for arg in args:
@@ -210,8 +216,10 @@ def emit_line(i, line, fun, regs, out):
   if len(results) > 0:
     n = len(results)
     print(f"param{n}_t o{i} = ", end="")
-
-  if op in OP_simple_case:
+  
+  if function:
+    print(f"{fun}({ wrap(args) });")
+  elif op in OP_simple_case:
     expr = OP_simple_case[op](*args)
     print(f"{expr};")
   else:
