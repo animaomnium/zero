@@ -101,7 +101,7 @@ def generate_param(n):
   print("typedef struct {")
   for i in range(n):
     print(f"  v{i}: uint64_t,")
-  print("} param{n}_t;")
+  print(f"} param{n}_t;")
 
 for i in range(1, 5):
   generate_param(i)
@@ -109,7 +109,7 @@ for i in range(1, 5):
 def declare_input_registers(n, regs):
   for i in range(n):
     print(f"  uint64_t r{i} = a.v{i};")
-    regs.insert(i)
+    regs.add(i)
 
 def emit_label(i, iden, fun):
   for char in iden:
