@@ -116,13 +116,21 @@ def emit_label(i, iden, fun):
     assert char in IDEN
   print(f"{fun}__{iden}:  // {i}")
 
+def wrap_t(vals):
+  n = len(vals)
+  nvals = []
+  for i, val in vals:
+    nvals.append(f"v{i}: {val}")
+  inner = ", ".join(nvals)
+  return f"param{n}_t {{ {inner} }}"
+
 def op2(op):
   def f(a, b):
-    return f"{a} {op} {b}"
+    return wrap_t([f"{a} {op} {b}"])
   return f
 
 OP_simple_case = {
-  "LIT": lambda a: f"{a}",
+  "LIT": lambda a: wrap([f"{a}"]),
 
   "ADD": op2("+"),
   "SUB": op2("-"),
@@ -138,14 +146,14 @@ OP_simple_case = {
   "SGT": op2(">"),
   "SLT": op2("<"),
 
-  "NOT": lambda a: f"!{a}",
+  "NOT": lambda a: wrap([f"!{a}"]),
   "AND": op2("&"),
   "IOR": op2("|"),
   "XOR": op2("^"),
 
-  "GET": lambda a: f"mem[{a}]",
+  "GET": lambda a: wrap([f"mem[{a}]"]),
   "SET": lambda a, b: \
-    f"{{ mem[{a}] = {b}; }}",
+    wrap([f"{{ mem[{a}] = {b}; }}"]),
 }
 
 def emit_line(i, line, fun, regs, out):
