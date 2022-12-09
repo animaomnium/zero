@@ -187,9 +187,9 @@ def emit_line(i, line, fun, regs, out):
   for result in results:
     assert result[0] == "r"
     n = int(result[1:])
-    if n not in args:
+    if n not in regs:
       print(f"  uint64_t r{n};")
-    args.add(n)
+    regs.add(n)
     nresults.append(n)
   results = nresults
 
