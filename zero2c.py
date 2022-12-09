@@ -219,7 +219,7 @@ def emit_line(i, line, fun, regs, out):
   
   if function:
     # TODO: assert call is valid
-    print(f"{fun}({ wrap(args) });")
+    print(f"{fun}({ wrap_t(args) });")
   elif op in OP_simple_case:
     expr = OP_simple_case[op](*args)
     print(f"{expr};")
