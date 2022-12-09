@@ -77,7 +77,8 @@ while True:
       block.append((i, line))
 
     funs.insert(iden, (inr, out, block))
-  except:
+  except e:
+    print(e)
     error(i, line)
   n += 1
 
