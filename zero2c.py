@@ -56,7 +56,7 @@ IDEN = "abcdefghijklmnopqrstuvwxyz_"
 
 funs = dict()
 n = 0
-while True:
+while n < len(lines):
   try:
     i, line = lines[n]
     iden, sig, open = line.split()
