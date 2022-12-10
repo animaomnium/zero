@@ -32,7 +32,7 @@ TEST = """
   RET r0  
 }
 
-@main 0:0 {
+@start 0:0 {
   r0 = @fib 25
   DBG r0
 }
@@ -247,9 +247,7 @@ def emit_line(i, line, fun, regs, out, funs):
     expr = OP_simple_case[op](*args)
     print(f"{expr};")
   else:
-    # TODO
-    # error(i, line)
-    print("// TODO:", line)  
+    error(i, line)
 
   for n, result in enumerate(results):
     print(f"  r{result} = o{i}.v{n};")
@@ -264,3 +262,14 @@ for fun, (inr, out, block) in funs.items():
     emit_line(i, line, fun, regs, out, funs)
 
   print("}")
+
+assert "start" in funs
+
+ENTRYPOINT = """
+int main() {
+  start();
+  return 0;
+}
+"""
+
+print(ENTRYPOINT)
