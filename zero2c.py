@@ -178,7 +178,7 @@ OP_simple_case = {
 }
 
 def emit_line(i, line, fun, regs, out, funs):
-  print("  //", line)
+  # print("  //", line)
   if line[0] == ".":
     emit_label(i, line[1:], fun)
     return
@@ -257,6 +257,7 @@ def emit_line(i, line, fun, regs, out, funs):
 
 for fun, (inr, out, block) in funs.items():
   regs = set()
+  print()
   print(f"param{out}_t ", end="")
   print(f"{fun}(param{inr}_t a) {{")
   declare_input_registers(inr, regs)
