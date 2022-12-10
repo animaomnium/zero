@@ -156,7 +156,7 @@ OP_simple_case = {
     wrap([f"{{ mem[{a}] = {b}; }}"]),
 }
 
-def emit_line(i, line, fun, regs, out):
+def emit_line(i, line, fun, regs, out, funs):
   print("  //", line)
   if line[0] == ".":
     emit_label(i, line[1:], fun)
@@ -218,8 +218,10 @@ def emit_line(i, line, fun, regs, out):
     print(f"param{n}_t o{i} = ", end="")
   
   if function:
-    # TODO: assert call is valid
-    print(f"{fun}({ wrap_t(args) });")
+    inr, out, _ = funs[op]
+    assert len(args) == inr
+    assert len(results) == out
+    print(f"{op}({ wrap_t(args) });")
   elif op in OP_simple_case:
     expr = OP_simple_case[op](*args)
     print(f"{expr};")
@@ -238,6 +240,6 @@ for fun, (inr, out, block) in funs.items():
   declare_input_registers(inr, regs)
   
   for i, line in block:
-    emit_line(i, line, fun, regs, out)
+    emit_line(i, line, fun, regs, out, funs)
 
   print("}")
