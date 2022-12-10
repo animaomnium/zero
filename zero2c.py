@@ -102,7 +102,7 @@ def generate_param(n):
     print(f"  v{i}: uint64_t,")
   print(f"}} param{n}_t;")
 
-for i in range(1, 5):
+for i in range(0, 5):
   generate_param(i)
 
 def declare_input_registers(n, regs):
@@ -270,7 +270,7 @@ assert "start" in funs
 
 ENTRYPOINT = """
 int main() {
-  start();
+  start(param0_t {});
   return 0;
 }
 """
