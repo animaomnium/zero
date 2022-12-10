@@ -31,4 +31,7 @@ jobs:
     - name: Compile output
       run: |
         gcc test.c -o test.bin -O2 -Wall
+    - name: Run output
+      run: |
+        ./test.bin
        
