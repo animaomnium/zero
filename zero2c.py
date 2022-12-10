@@ -138,7 +138,7 @@ def ret(*args):
 
 def jump2(op):
   def f(label, a, b):
-    return f"if ({a} {op} {b}) {{ goto {label}; }}"
+    return f"if ({a} {op} {b}) {{ printf("jumping...\n"); goto {label}; }}"
   return f
 
 OP_simple_case = {
