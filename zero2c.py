@@ -21,8 +21,7 @@ with open("assembler.zero") as file:
 TEST = """
 # Fibonacci
 @fib 1:1 {
-  r1 = SLT r0 2
-  JEQ .else r1 0
+  JLT .else r0 2
   RET r0
 .else
   r2 = SUB r0 2
@@ -129,8 +128,16 @@ def op2(op):
     return wrap_t([f"{a} {op} {b}"])
   return f
 
+def ret(*args):
+  return f"return { wrap_t(args) }"
+
+def jump2(op):
+  def f(label, a, b):
+    f"a {op} b ? {{ goto {label}; }} : { wrap_t(["0LL"]) }"
+  return f
+
 OP_simple_case = {
-  "LIT": lambda a: wrap([f"{a}"]),
+  "LIT": lambda a: wrap_t([f"{a}"]),
 
   "ADD": op2("+"),
   "SUB": op2("-"),
@@ -141,19 +148,30 @@ OP_simple_case = {
   "SHR": op2(">>"),
 
   "EQL": op2("=="),
+  "NEQ": op2("!="),
   "GTE": op2(">="),
   "LTE": op2("<="),
   "SGT": op2(">"),
   "SLT": op2("<"),
 
-  "NOT": lambda a: wrap([f"!{a}"]),
+  "NOT": lambda a: wrap_t([f"!{a}"]),
   "AND": op2("&"),
   "IOR": op2("|"),
   "XOR": op2("^"),
 
-  "GET": lambda a: wrap([f"mem[{a}]"]),
+  "GET": lambda a: wrap_t([f"mem[{a}]"]),
   "SET": lambda a, b: \
     wrap([f"{{ mem[{a}] = {b}; }}"]),
+
+  "RET": ret,
+  "JMP": lambda a: f"goto {a}",
+  "JNZ": lambda a, b: jump2("!=")(a, b, "0LL"),
+  "JEQ": jump2("=="),
+  "JNE": jump2("!="),
+  "JGE": jump2(">="),
+  "JLE": jump2("<="),
+  "JGT": jump2(">"),
+  "JLT": jump2("<"),
 }
 
 def emit_line(i, line, fun, regs, out, funs):
@@ -175,6 +193,7 @@ def emit_line(i, line, fun, regs, out, funs):
     function = True
     for char in op[1:]:
       assert char in IDEN
+    op = op[1:]
   else:
     assert len(op) == 3
     for char in op:
@@ -197,7 +216,9 @@ def emit_line(i, line, fun, regs, out, funs):
       n = int(arg)
       nargs.append(f"{n}LL")
     elif arg[0] == ".":
-      nargs.append(arg)
+      for char in arg[1:]:
+        assert char in IDEN
+      nargs.append(f"{fun}__{arg[1:]}")
     else:
       error(i, line)
   args = nargs    
@@ -218,7 +239,7 @@ def emit_line(i, line, fun, regs, out, funs):
     print(f"param{n}_t o{i} = ", end="")
   
   if function:
-    inr, out, _ = funs[op[1:]]
+    inr, out, _ = funs[op]
     assert len(args) == inr
     assert len(results) == out
     print(f"{op}({ wrap_t(args) });")
