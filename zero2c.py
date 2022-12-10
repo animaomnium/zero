@@ -96,6 +96,8 @@ RUNTIME = """
 
 print(RUNTIME)
 
+
+"""
 def generate_param(n):
   print("typedef struct {")
   for i in range(n):
@@ -104,10 +106,11 @@ def generate_param(n):
 
 for i in range(0, 5):
   generate_param(i)
+"""
 
 def declare_input_registers(n, regs):
   for i in range(n):
-    print(f"  uint64_t r{i} = a.v{i};")
+    print(f"  uint64_t r{i} = a[i];")
     regs.add(i)
 
 def emit_label(i, iden, fun):
@@ -119,9 +122,9 @@ def wrap_t(vals):
   n = len(vals)
   nvals = []
   for i, val in enumerate(vals):
-    nvals.append(f"v{i}: {val}")
+    nvals.append(f"{val}")
   inner = ", ".join(nvals)
-  return f"{{ {inner} }}"
+  return f"[{inner}]"
 
 def op2(op):
   def f(a, b):
@@ -239,7 +242,7 @@ def emit_line(i, line, fun, regs, out, funs):
   print("  ", end="")
   if len(results) > 0:
     n = len(results)
-    print(f"param{n}_t o{i} = ", end="")
+    print(f"uint64_t[{n}] o{i} = ", end="")
   
   if function:
     inr, out, _ = funs[op]
@@ -253,13 +256,13 @@ def emit_line(i, line, fun, regs, out, funs):
     error(i, line)
 
   for n, result in enumerate(results):
-    print(f"  r{result} = o{i}.v{n};")
+    print(f"  r{result} = o{i}[{n}];")
 
 for fun, (inr, out, block) in funs.items():
   regs = set()
   print()
-  print(f"param{out}_t ", end="")
-  print(f"{fun}(param{inr}_t a) {{")
+  print(f"uint64_t[{out}] ", end="")
+  print(f"{fun}(uint64_t[{inr}] a) {{")
   declare_input_registers(inr, regs)
   
   for i, line in block:
