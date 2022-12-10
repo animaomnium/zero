@@ -20,7 +20,7 @@ with open("assembler.zero") as file:
 
 TEST = """
 # Fibonacci
-@fib_rec 1:1 {
+@fib 1:1 {
   r1 = SLT r0 2
   JEQ .else r1 0
   RET r0
