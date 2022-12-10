@@ -21,6 +21,7 @@ with open("assembler.zero") as file:
 TEST = """
 # Fibonacci
 @fib 1:1 {
+  RET 26
   JLT .else r0 2
   RET r0
 .else
