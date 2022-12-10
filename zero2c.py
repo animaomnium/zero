@@ -45,8 +45,8 @@ for i, line in enumerate(TEST.split("\n")):
   if line != "":
     lines.append((i, line))
 
-pprint(lines)
-print("---")
+# pprint(lines)
+# print("---")
 
 
 # parse functions
@@ -80,8 +80,8 @@ while n < len(lines):
     error(i, line)
   n += 1
 
-pprint(funs)
-print("---")
+# pprint(funs)
+# print("---")
 
 
 # Emit C code
