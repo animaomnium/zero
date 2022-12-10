@@ -174,7 +174,7 @@ OP_simple_case = {
   "JLT": jump2("<"),
 
   # TODO: make into an expression returning a
-  "DBG": lambda a: f'printf("%d\n", {a})',
+  "DBG": lambda a: f'printf("%d\\n", {a})',
 }
 
 def emit_line(i, line, fun, regs, out, funs):
