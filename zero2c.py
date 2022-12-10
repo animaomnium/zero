@@ -21,10 +21,12 @@ with open("assembler.zero") as file:
 TEST = """
 # Fibonacci
 @fib 1:1 {
-  RET 26
+  DBG r0
   JLT .else r0 2
+  DBG 41
   RET r0
 .else
+  DBG 42
   r2 = SUB r0 2
   r2 = @fib r2
   r3 = SUB r0 1
@@ -34,7 +36,7 @@ TEST = """
 }
 
 @start 0:0 {
-  r0 = @fib 25
+  r0 = @fib 5
   DBG r0
   r1 = ADD 2 3
   DBG r1
