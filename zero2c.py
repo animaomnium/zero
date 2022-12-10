@@ -121,7 +121,7 @@ def wrap_t(vals):
   for i, val in enumerate(vals):
     nvals.append(f"v{i}: {val}")
   inner = ", ".join(nvals)
-  return f"param{n}_t {{ {inner} }}"
+  return f"{{ {inner} }}"
 
 def op2(op):
   def f(a, b):
@@ -133,7 +133,7 @@ def ret(*args):
 
 def jump2(op):
   def f(label, a, b):
-    return f"a {op} b ? {{ goto {label}; }} : { wrap_t(['0LL']) }"
+    return f"{a} {op} {b} ? {{ goto {label}; }} : { wrap_t(['0LL']) }"
   return f
 
 OP_simple_case = {
@@ -271,7 +271,7 @@ assert "start" in funs
 
 ENTRYPOINT = """
 int main() {
-  start(param0_t {});
+  start({0});
   return 0;
 }
 """
