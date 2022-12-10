@@ -26,4 +26,9 @@ jobs:
         pip install flake8 pytest
     - name: Test new version
       run: |
-        python zero2c.py
+        python zero2c.py > test.c
+        cat test.c
+    - name: Compile output
+      run: |
+        gcc test.c -o test.bin -O2
+       
