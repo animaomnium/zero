@@ -119,9 +119,9 @@ def wrap_t(vals):
   n = len(vals)
   nvals = []
   for i, val in enumerate(vals):
-    nvals.append(f"v{i}: {val}")
+    nvals.append(f".v{i} = {val}")
   inner = ", ".join(nvals)
-  return f"struct {{ {inner} }}"
+  return f"(param{n}_t) {{ {inner} }}"
 
 def op2(op):
   def f(a, b):
