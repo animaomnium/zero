@@ -133,7 +133,7 @@ def ret(*args):
 
 def jump2(op):
   def f(label, a, b):
-    return f"{a} {op} {b} ? (goto {label}) : { wrap_t(['0LL']) }"
+    return f"if ({a} {op} {b}) { goto {label}); }"
   return f
 
 OP_simple_case = {
