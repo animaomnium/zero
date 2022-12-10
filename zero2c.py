@@ -99,7 +99,7 @@ print(RUNTIME)
 def generate_param(n):
   print("typedef struct {")
   for i in range(n):
-    print(f"  v{i}: uint64_t,")
+    print(f"  uint64_t v{i},")
   print(f"}} param{n}_t;")
 
 for i in range(0, 5):
