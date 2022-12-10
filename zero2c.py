@@ -133,7 +133,7 @@ def ret(*args):
 
 def jump2(op):
   def f(label, a, b):
-    return f"{a} {op} {b} ? {{ goto {label}; }} : { wrap_t(['0LL']) }"
+    return f"{a} {op} {b} ? (goto {label}) : { wrap_t(['0LL']) }"
   return f
 
 OP_simple_case = {
@@ -271,7 +271,7 @@ assert "start" in funs
 
 ENTRYPOINT = """
 int main() {
-  start(struct {0});
+  start((param0_t) {0});
   return 0;
 }
 """
