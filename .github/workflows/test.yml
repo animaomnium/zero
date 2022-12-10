@@ -30,5 +30,5 @@ jobs:
         cat test.c
     - name: Compile output
       run: |
-        gcc test.c -o test.bin -O2
+        gcc test.c -o test.bin -O2 -Wall
        
