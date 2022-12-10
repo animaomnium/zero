@@ -239,7 +239,7 @@ def emit_line(i, line, fun, regs, out, funs):
   print("  ", end="")
   if len(results) > 0:
     n = len(results)
-    print(f"uint64_t[{n}] o{i} = ", end="")
+    print(f"param{n}_t o{i} = ", end="")
   
   if function:
     inr, out, _ = funs[op]
