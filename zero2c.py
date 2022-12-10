@@ -218,7 +218,7 @@ def emit_line(i, line, fun, regs, out, funs):
     print(f"param{n}_t o{i} = ", end="")
   
   if function:
-    inr, out, _ = funs[op]
+    inr, out, _ = funs[op[1:]]
     assert len(args) == inr
     assert len(results) == out
     print(f"{op}({ wrap_t(args) });")
