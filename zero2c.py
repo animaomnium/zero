@@ -271,7 +271,7 @@ assert "start" in funs
 
 ENTRYPOINT = """
 int main() {
-  start((param0_t) {0});
+  start((param0_t) {});
   return 0;
 }
 """
