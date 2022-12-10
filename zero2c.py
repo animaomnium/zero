@@ -172,6 +172,9 @@ OP_simple_case = {
   "JLE": jump2("<="),
   "JGT": jump2(">"),
   "JLT": jump2("<"),
+
+  # TODO: make into an expression returning a
+  "DBG": lambda a: f'printf("%d\n", {a})',
 }
 
 def emit_line(i, line, fun, regs, out, funs):
