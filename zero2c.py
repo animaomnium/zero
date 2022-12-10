@@ -33,7 +33,7 @@ TEST = """
 }
 
 @start 0:0 {
-  r0 = @fib 10
+  r0 = @fib 5
   DBG r0
   r1 = ADD 2 3
   DBG r1
