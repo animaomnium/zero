@@ -121,7 +121,7 @@ def wrap_t(vals):
   n = len(vals)
   nvals = []
   for i, val in enumerate(vals):
-    nvals.append(f".v{i} = {val}")
+    nvals.append(f"{val}")
   inner = ", ".join(nvals)
   return f"(param{n}_t) {{ {inner} }}"
 
@@ -135,7 +135,7 @@ def ret(*args):
 
 def jump2(op):
   def f(label, a, b):
-    return f"if ({a} {op} {b}) {{ printf('jumping...\\n'); goto {label}; }}"
+    return f"if ({a} {op} {b}) {{ goto {label}; }}"
   return f
 
 OP_simple_case = {
@@ -267,6 +267,7 @@ for fun, (inr, out, block) in funs.items():
   for i, line in block:
     emit_line(i, line, fun, regs, out, funs)
 
+  print("  return (param{out}_t) {0};")
   print("}")
 
 assert "start" in funs
