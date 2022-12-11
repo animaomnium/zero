@@ -102,7 +102,12 @@ def generate_param(n):
     print(f"  uint64_t v{i};")
   print(f"}} param{n}_t;")
 
-for i in range(0, 5):
+params = set([0, 1, 2, 3])
+for inr, out, _ in iter(funs):
+  set.add(inr)
+  set.add(out)
+
+for i in sorted(list(params)):
   generate_param(i)
 
 def declare_input_registers(n, regs):
