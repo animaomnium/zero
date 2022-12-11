@@ -51,7 +51,6 @@ TEST = """
   DBG r15
   r20 = @fib 20
   DBG r20
-  RET
 }
 """
 
