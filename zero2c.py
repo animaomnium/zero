@@ -267,7 +267,7 @@ for fun, (inr, out, block) in funs.items():
   for i, line in block:
     emit_line(i, line, fun, regs, out, funs)
 
-  print("  return (param{out}_t) {0};")
+  print(f"  return (param{out}_t) {{0}};")
   print("}")
 
 assert "start" in funs
