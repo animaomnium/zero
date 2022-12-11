@@ -1,0 +1,17 @@
+# Recursive Fibonacci
+@fib 1:1 {
+  JLT .end r0 2
+  r1 = SUB r0 2
+  r1 = @fib r1
+  r2 = SUB r0 1
+  r2 = @fib r2
+  r0 = ADD r1 r2
+.end
+  RET r0  
+}
+
+# Print 40th Fibonacci number
+@start 0:0 {
+  r0 = @fib 40
+  DBG r0
+}
