@@ -102,10 +102,11 @@ def generate_param(n):
     print(f"  uint64_t v{i};")
   print(f"}} param{n}_t;")
 
-params = set([0, 1, 2, 3])
+# All base ops return arity 0 or 1.
+params = set([0, 1])
 for inr, out, _ in iter(funs):
-  set.add(inr)
-  set.add(out)
+  params.add(inr)
+  params.add(out)
 
 for i in sorted(list(params)):
   generate_param(i)
