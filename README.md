@@ -11,8 +11,8 @@ Here is an example:
 .else
   r2 = SUB r0 1
   r3 = SUB r0 2
-  r2 = RUN @fib r2
-  r3 = RUN @fib r3
+  r2 = @fib r2
+  r3 = @fib r3
   r4 = ADD r2 r3
   RET r4 
 }
@@ -34,7 +34,7 @@ A Language Zero module is a list of functions:
 
 Where:
 
-- `NAME` is an identifier `/(a-zA-Z)+/`.
+- `NAME` is an identifier `/(_a-z)+/`.
 - `INPUTS` is the number of input registers.
 - `OUTPUTS` is the number of output registers.
 - `BODY` is a list of labels and instructions.
@@ -64,3 +64,15 @@ In general:
 r0 r1 ...rN = INS r0 r1 ...rM
 ------------- optional
 ```
+Where `INS` is a three-character name,
+each character matching `/A-Z/`. 
+
+A label is a point, local to a function, 
+that can be jumped to from within that function.
+A label takes the following form:
+
+```
+.NAME
+```
+
+where `NAME` is an identifier `/(_a-z)+/`.
