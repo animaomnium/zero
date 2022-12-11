@@ -33,24 +33,8 @@ TEST = """
 }
 
 @start 0:0 {
-  r0 = @fib 0
+  r0 = @fib 40
   DBG r0
-  r1 = @fib 1
-  DBG r1
-  r2 = @fib 2
-  DBG r2
-  r3 = @fib 3
-  DBG r3
-  r4 = @fib 4
-  DBG r4
-  r5 = @fib 5
-  DBG r5
-  r10 = @fib 10
-  DBG r10
-  r15 = @fib 15
-  DBG r15
-  r20 = @fib 20
-  DBG r20
 }
 """
 
